@@ -1,1 +1,63 @@
+SELECT pageview_url,
+       COUNT(DISTINCT website_pageview_id) AS page_views
+FROM website_pageviews
+WHERE website_pageview_id < 1000
+GROUP BY pageview_url
+ORDER BY page_views DESC
+
+--------
+
+## THE HOME PAGE IS THE ENTRY PAGE FOR ALL 523 SESSIONS
+
+CREATE TEMPORARY TABLE first_pageviews
+SELECT website_session_id,
+       MIN(website_pageview_id) AS min_pageview_id
+FROM website_pageviews
+WHERE website_pageview_id < 1000
+GROUP BY website_session_id;
+
+
+
+SELECT website_pageviews.pageview_url AS entry_page,
+       COUNT(DISTINCT first_pageviews.website_session_id) AS sessions_hitting_this_entry
+FROM first_pageviews
+    LEFT JOIN website_pageviews
+       ON first_pageviews.min_pageview_id = website_pageviews.website_pageview_id
+GROUP BY entry_page;
+
+--------
+
+## (TOP WEBSITE PAGES) FINDING THE MOST VIEWED WEBSITE PAGES, RANKED BY SESSION VOLUME, BEFORE JUNE 09, 2012
+
+SELECT pageview_url,
+       COUNT(DISTINCT website_session_id) AS session_volume
+FROM website_pageviews
+WHERE created_at < '2012-06-09'
+GROUP BY pageview_url
+ORDER BY session_volume DESC
+
+--------
+
+## (TOP ENTRY PAGES) FINDING ALL ENTRY PAGES AND RANKING THEM ON ENTRY VOLUME
+
+CREATE TEMPORARY TABLE first_pageview_by_sessions
+SELECT website_session_id,
+       MIN(website_pageview_id) AS first_pageview
+FROM website_pageviews
+WHERE created_at < '2012-06-09'
+GROUP BY website_session_id;
+
+
+
+SELECT website_pageviews.pageview_url AS entry_page_url,
+       COUNT(DISTINCT first_pageview_by_sessions.website_session_id) AS num_sessions
+FROM first_pageview_by_sessions
+     LEFT JOIN website_pageviews
+         ON first_pageview_by_sessions.first_pageview = website_pageviews.website_pageview_id
+GROUP BY 1
+
+--------
+
+## ANALYZING TRAFFIC LANDED ON THE HOMEPAGE (SESSIONS, BOUNCED SESSIONS, % OF SESSIONS WHICH BOUNCED)
+
 
