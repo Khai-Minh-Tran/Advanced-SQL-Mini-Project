@@ -122,7 +122,7 @@ WHERE pageview_url = '/products';
 SELECT YEAR(saw_product_page_at) AS yr,
        MONTH(saw_product_page_at) AS mth,
        COUNT(DISTINCT products_pageviews.website_session_id)                                                      AS sessions_to_product_page,
-	    COUNT(DISTINCT website_pageviews.website_session_id)                                                       AS clicked_to_next_page,
+       COUNT(DISTINCT website_pageviews.website_session_id)                                                       AS clicked_to_next_page,
        COUNT(DISTINCT website_pageviews.website_session_id)/COUNT(DISTINCT products_pageviews.website_session_id) AS clickthrough_rate,
        COUNT(DISTINCT orders.order_id)                                                                            AS orders,
        COUNT(DISTINCT orders.order_id)/COUNT(DISTINCT products_pageviews.website_session_id)                      AS products_to_order_rate
